@@ -1,0 +1,180 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  password     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  role         Role      @default("USER")
+  refreshToken String?
+  addresses    Address[]
+  cart         Cart?
+  orders       Order[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id           String         @id @default(cuid())
+  name         String
+  price        Float
+  category     String
+  description  String
+  stock        Int
+  brand        String?
+  color        Json?
+  soldCount    Int            @default(0)
+  sizes        Json?
+  gender       String?
+  rating       Float?         @default(0)
+  images       Json?
+  isFeatured   Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  orderItems   OrderItem[]
+  new_CartItem new_CartItem[]
+}
+
+model Coupon {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  percentage Float
+  startDate  DateTime
+  endDate    DateTime
+  usageLimit Int
+  usageCount Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model FeaturedBanner {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id           String         @id @default(uuid())
+  userId       String         @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         User           @relation(fields: [userId], references: [id])
+  cartItems    CartItem[]
+  new_CartItem new_CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productID String
+  quantity  Int
+  size      String?
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cart      Cart     @relation(fields: [cartId], references: [id])
+
+  @@unique([cartId, productID, color, size])
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  address     String
+  district    String
+  subcounty   String
+  village     String
+  phonenumber String
+  email       String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+  orders      Order[]
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  userId        String
+  addressId     String
+  couponId      String?
+  totalAmount   Float
+  status        OrderStatus   @default(PENDING
+)
+  paymentId     String?
+  paymentStatus PaymentStatus @default("PENDING")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  coupon        Coupon?       @relation(fields: [couponId], references: [id])
+  address       Address       @relation(fields: [addressId], references: [id])
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  size      String?
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model new_CartItem {
+  id        String   @id
+  cartId    String
+  productId String
+  quantity  Int
+  size      String?
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Product   Product  @relation(fields: [productId], references: [id])
+  Cart      Cart     @relation(fields: [cartId], references: [id])
+}
+
+enum Role {
+  USER
+  SUPER_ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  FAILED
+}
+
+
+
