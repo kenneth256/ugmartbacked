@@ -10,7 +10,6 @@ const main = async () => {
   const name = "Kenneth";
   const password = "123456";
 
-  // Check if a user with this email OR role already exists
   const existingAdmin = await prisma.user.findFirst({
     where: {
       OR: [
@@ -36,9 +35,7 @@ const main = async () => {
     },
   });
 
-  console.log("✅ Created admin:", admin.email);
-  console.log("📝 Login - Email:", email, "Password:", password);
-  console.log("🎉 Seed completed!");
+
 };
 
 main()
