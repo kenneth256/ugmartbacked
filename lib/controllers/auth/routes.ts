@@ -23,18 +23,18 @@ const setToken = async (res: Response, accessToken: string, refreshToken: string
   const isProduction = process.env.NODE_ENV === 'production';
   
   res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: true, // Always true (Render uses HTTPS)
-    sameSite: 'none', // Must be 'none' for cross-origin
-    maxAge: 1000 * 60 * 15 // 15 minutes
-  });
+  httpOnly: true,
+  secure: isProduction, // Only secure in production
+  sameSite: isProduction ? 'none' : 'lax', // 'lax' works in dev
+  maxAge: 1000 * 60 * 15 // 15 minutes
+});
 
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: true, // Always true (Render uses HTTPS)
-    sameSite: 'none', // Must be 'none' for cross-origin
-    maxAge: 1000 * 60 * 60 * 24 * 7 
-  });
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  maxAge: 1000 * 60 * 60 * 24 * 7
+});
 };
 
 
