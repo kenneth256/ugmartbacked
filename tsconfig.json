@@ -1,23 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ES2020",
+    "target": "ES2020",               // good for private class fields
+    "module": "ESNext",               // safer for Node + ESM
     "lib": ["ES2020"],
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./",
-    "strict": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    "strict": true,                    // enable for better type safety
+    "esModuleInterop": true,           // fixes bcrypt import
+    "skipLibCheck": true,              // avoid Prisma type errors
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "useUnknownInCatchVariables": false,
-    "noImplicitAny": true,
+    "noImplicitAny": false,            // optional; avoid TS errors in legacy code
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types"]
+    "types": ["node"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
