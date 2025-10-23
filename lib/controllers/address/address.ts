@@ -42,7 +42,6 @@ export const createAddress = async (req: AuthenticatedRequest, res: Response) =>
       address: newAddress,
     });
   } catch (error) {
-    console.error("Create address error:", error);
     return res.status(500).json({ success: false, error: "Internal server error!" });
   }
 };
