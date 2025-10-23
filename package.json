@@ -13,10 +13,6 @@
     "db:studio": "npx prisma studio",
     "db:seed": "tsx prisma/seed.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -27,7 +23,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.7.0",
+    "@types/node": "^20.0.0",
     "prisma": "^6.17.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
@@ -35,7 +31,6 @@
   "dependencies": {
     "@prisma/client": "^6.17.1",
     "@prisma/extension-accelerate": "^2.0.2",
-    "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",

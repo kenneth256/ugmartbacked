@@ -20,17 +20,19 @@ export const generateAccessTokens = (id: string, email: string, role: string) =>
 };
 
 const setToken = async (res: Response, accessToken: string, refreshToken: string) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Changed!
+    secure: true, // Always true (Render uses HTTPS)
+    sameSite: 'none', // Must be 'none' for cross-origin
     maxAge: 1000 * 60 * 15 // 15 minutes
   });
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', 
+    secure: true, // Always true (Render uses HTTPS)
+    sameSite: 'none', // Must be 'none' for cross-origin
     maxAge: 1000 * 60 * 60 * 24 * 7 
   });
 };
@@ -172,7 +174,6 @@ export const logout = async(req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     
-    // Clear refreshToken from database
     if (refreshToken) {
       await prisma.user.updateMany({
         where: { refreshToken },
