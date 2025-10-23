@@ -38,7 +38,7 @@ app.use(cors({
 }));
 
 // Handle preflight requests
-app.options('*', cors());
+app.options('/*', cors());
 
 // ----- Middleware -----
 app.use(cookieParser());
@@ -92,7 +92,7 @@ app.use((req, res) => {
   });
 });
 
-// ----- Error Handler -----
+
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err.message || err);
   res.status(err.status || 500).json({
