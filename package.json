@@ -11,7 +11,7 @@
     "db:push": "npx prisma db push",
     "db:migrate": "npx prisma migrate deploy",
     "db:studio": "npx prisma studio",
-    "db:seed": "node dist/prisma/seed.js"
+     "db:seed": "npx tsx prisma/seed.ts"
   },
   "engines": {
     "node": ">=18.0.0"
