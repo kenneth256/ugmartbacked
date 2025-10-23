@@ -72,7 +72,7 @@ app.use('/api/address', addressRouter);
 app.use('/api/orders', orderRouter);
 
 
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ 
     success: false,
     error: 'Route not found',
