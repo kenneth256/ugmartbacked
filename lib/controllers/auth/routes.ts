@@ -24,15 +24,15 @@ const setToken = async (res: Response, accessToken: string, refreshToken: string
   
   res.cookie('accessToken', accessToken, {
   httpOnly: true,
-  secure: isProduction, // Only secure in production
-  sameSite: isProduction ? 'none' : 'lax', // 'lax' works in dev
+  secure: false, // Only secure in production
+  sameSite: 'none', // 'lax' works in dev
   maxAge: 1000 * 60 * 15 // 15 minutes
 });
 
   res.cookie('refreshToken', refreshToken, {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? 'none' : 'lax',
+  secure: false,
+  sameSite: 'none',
   maxAge: 1000 * 60 * 60 * 24 * 7
 });
 };
