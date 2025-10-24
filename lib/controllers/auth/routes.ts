@@ -1,40 +1,36 @@
 import type { Request, Response } from "express";
-
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import prisma from "../../prisma.js";
 
-
 export const generateAccessTokens = (id: string, email: string, role: string) => {
-   
   const accessToken = jwt.sign(
     { id, email, role },
     process.env.JWT_SECRET as string,
     { expiresIn: "15m" } 
   );
 
-  const refreshToken = randomUUID()
-
+  const refreshToken = randomUUID();
   return { accessToken, refreshToken };
 };
+
 
 const setToken = async (res: Response, accessToken: string, refreshToken: string) => {
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 1000 * 60 * 15 // 15 minutes
+    secure: true, 
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 15 
   });
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true, 
+    sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24 * 7 
   });
 };
-
 
 export async function register(req: Request, res: Response): Promise<void> {
   try {
@@ -45,7 +41,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       res.status(400).json({ 
         success: false,
         error: `User with email ${email} already exists`
-       });
+      });
       return; 
     }
 
@@ -66,7 +62,6 @@ export async function register(req: Request, res: Response): Promise<void> {
   }
 }
 
-
 export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
@@ -82,7 +77,6 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
     
-    console.log('Comparing passwords...');
     const isMatch = bcrypt.compareSync(password, user.password);
     
     if (!isMatch) {
@@ -95,7 +89,6 @@ export async function login(req: Request, res: Response): Promise<void> {
     
     const { accessToken, refreshToken } = generateAccessTokens(user.id, user.email, user.role);
     
-    // ✅ IMPORTANT: Save refreshToken to database
     await prisma.user.update({
       where: { id: user.id },
       data: { refreshToken }
@@ -103,10 +96,10 @@ export async function login(req: Request, res: Response): Promise<void> {
     
     await setToken(res, accessToken, refreshToken);
     
+    
     res.status(200).json({
       success: true,
       message: "Logged in successfully!",
-      accessToken: accessToken, 
       user: {
         name: user.name,
         email: user.email,
@@ -122,6 +115,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     });
   }
 }
+
 export const refreshAccessToken = async(req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if(!refreshToken) {
@@ -147,7 +141,6 @@ export const refreshAccessToken = async(req: Request, res: Response) => {
     
     const {accessToken, refreshToken: newRefreshToken} = generateAccessTokens(user.id, user.email, user.role)
     
-    // Update refreshToken in database
     await prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: newRefreshToken }
@@ -172,7 +165,6 @@ export const logout = async(req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     
-    // Clear refreshToken from database
     if (refreshToken) {
       await prisma.user.updateMany({
         where: { refreshToken },
