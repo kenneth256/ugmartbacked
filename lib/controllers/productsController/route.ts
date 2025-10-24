@@ -11,27 +11,29 @@ import type { Prisma } from "@prisma/client";
 export async function createProduct(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { name, price, category, description, stock, soldCount, sizes, gender, rating, brand, color, isFeatured } = req.body;
-    const {userId} = req.user?.userId as any;
-    if(!userId) {
-      res.status(404).json({success: false, error: "Unathorized access denied"})
+    const { userId } = req.user?.userId as any;
+    
+   
+    if (!userId) {
+      res.status(404).json({ success: false, error: "Unauthorized access denied" });
+      return;  
     }
+    
     if (!name || !price || !category || !description || stock === undefined) {
-      res.status(400).json({ 
-        success: false, 
-        error: "Missing required fields: name, price, category, description, and stock are required" 
+      res.status(400).json({
+        success: false,
+        error: "Missing required fields: name, price, category, description, and stock are required"
       });
       return;
     }
-
+    
     const files = req.files as any[];
     if (!files || files.length === 0) {
       res.status(400).json({ success: false, error: "No images uploaded" });
       return;
     }
-
-  
     
-    const uploadPromises = files.map(file => 
+    const uploadPromises = files.map(file =>
       cloudinary.uploader.upload(file.path, {
         folder: 'ecomerce'
       })
@@ -39,15 +41,12 @@ export async function createProduct(req: AuthenticatedRequest, res: Response): P
     
     const uploadResults = await Promise.all(uploadPromises);
     const imageURLs = uploadResults.map(result => result.secure_url);
-    
     console.log('Images uploaded:', imageURLs);
     
-   
     const newProduct = await prisma.product.create({
       data: {
         name,
         price: parseFloat(price),
-        // Updated: Connect or create category by name
         category: {
           connectOrCreate: {
             where: { name: category },
@@ -57,20 +56,19 @@ export async function createProduct(req: AuthenticatedRequest, res: Response): P
         description,
         stock: parseInt(stock),
         soldCount: soldCount ? parseInt(soldCount) : 0,
-        // Handle sizes - Prisma Json field accepts arrays directly
         sizes: sizes ? (typeof sizes === 'string' ? sizes.split(',').map((s: string) => s.trim()) : sizes) : null,
         gender: gender || null,
         rating: rating ? parseFloat(rating) : 0,
-        images: imageURLs, 
+        images: imageURLs,
         brand: brand || null,
-        // Handle color - if it's a string (e.g., JSON string), parse it; otherwise use as-is
         color: color ? (typeof color === 'string' && color.startsWith('{') ? JSON.parse(color) : color) : null,
         isFeatured: isFeatured === 'true' || isFeatured === true
       }
     });
     
     console.log('Product created:', newProduct);
-  
+    
+    // Clean up uploaded files
     files.forEach(file => {
       try {
         if (fs.existsSync(file.path)) {
@@ -80,18 +78,17 @@ export async function createProduct(req: AuthenticatedRequest, res: Response): P
         console.error('Error deleting file:', file.path, cleanupError);
       }
     });
-
-    res.status(201).json({ 
-      success: true, 
+    
+    res.status(201).json({
+      success: true,
       message: "Product created successfully",
       product: newProduct
     });
     
-
   } catch (error) {
     console.error('Error creating product:', error);
     
-    
+    // Clean up uploaded files on error
     try {
       const files = req.files as any[];
       if (files && files.length > 0) {
@@ -105,11 +102,10 @@ export async function createProduct(req: AuthenticatedRequest, res: Response): P
       console.error('Error cleaning up files:', cleanupError);
     }
     
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Error creating product" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Error creating product"
     });
-    return;
   }
 }
 
