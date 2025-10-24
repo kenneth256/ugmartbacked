@@ -6,7 +6,7 @@ import { upload } from "../../../middleware/uploadMiddleWare.js";
 
 const router: Router = express.Router();
 
-router.post('/products',authenticate, isSuperAdmin upload.array("images", 5), createProduct);
+router.post('/products',authenticate, isSuperAdmin, upload.array("images", 5), createProduct);
 router.delete('/products/:id', authenticate, isSuperAdmin,deleteProduct)
 router.put('/products/:id', authenticate, isSuperAdmin, upload.array("images", 5), updateProduct)
 
