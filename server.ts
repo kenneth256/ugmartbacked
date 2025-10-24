@@ -12,7 +12,6 @@ import orderRouter from "./lib/controllers/order/routes.js";
 
 const app: Express = express();
 
-
 app.use(cors({
   origin: [
     'http://localhost:3000',   // Local HTTP
