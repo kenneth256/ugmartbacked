@@ -13,7 +13,7 @@ export async function createProduct(req: AuthenticatedRequest, res: Response): P
     const { name, price, category, description, stock, soldCount, sizes, gender, rating, brand, color, isFeatured } = req.body;
     const { userId } = req.user?.userId as any;
     
-   
+   console.log(userId)
     if (!userId) {
       res.status(404).json({ success: false, error: "Unauthorized access denied" });
       return;  
