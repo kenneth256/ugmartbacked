@@ -68,7 +68,7 @@ export const updateAddress = async (req: AuthenticatedRequest, res: Response) =>
   return;
 }
 
-    const id = addressId;
+    const id: string = addressId;
 
     
     if (!name && !email && !address && !district && !subcounty && !village && !phonenumber && isDefault === undefined) {
