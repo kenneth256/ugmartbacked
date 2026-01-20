@@ -126,11 +126,15 @@ export const fetchProducts = async(req: AuthenticatedRequest, res: Response): Pr
 }
 
 export const fetchById = async(req: AuthenticatedRequest, res: Response) => {
-    const {id} = req.params
+    
     try {
-      if(!id) {
-        return;
-      }  
+      const idParam = req.params.id;
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
+
+const id = idParam;
       const product = await prisma.product.findUnique({
             where: {id},
             include: {
@@ -149,12 +153,16 @@ export const fetchById = async(req: AuthenticatedRequest, res: Response) => {
 }
 
 export const deleteProduct = async(req: AuthenticatedRequest, res: Response) => {
-  const {id} = req.params;
+  
   
   try {
-    if(!id) {
-      return res.status(400).json({success: false, error: "Product ID is required"});
-    }
+     const idParam = req.params.id;
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
+
+const id = idParam;
 
     // Check if product has any pending/active orders
     const activeOrders = await prisma.orderItem.findFirst({
@@ -244,7 +252,7 @@ const id = idParam;
       color,
       isFeatured,
       existingImages
-    } = req.body;
+    } = req.body as Record<string, any>;
 
     const existingProduct = await prisma.product.findUnique({
       where: { id }
