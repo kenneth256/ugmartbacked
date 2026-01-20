@@ -6,7 +6,7 @@ import type { Response } from "express";
 
 export async function createCoupon(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
-    const { code, percentage, startDate, endDate, usageLimit } = req.body;
+    const { code, percentage, startDate, endDate, usageLimit } = req.body as Record<string, any>;
 
     if (!code || !percentage || !startDate || !endDate || !usageLimit) {
       res.status(400).json({ success: false, error: "Missing required fields!" });

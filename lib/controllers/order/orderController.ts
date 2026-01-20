@@ -74,7 +74,7 @@ export const createPaypalOrder = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { items, total } = req.body;
+   const { items, total } = req.body as { items: any[], total: number };
    const userId = req.user?.userId;
      if(!userId) {
       res.status(404).json("Unauthorized access denied1")
@@ -205,7 +205,7 @@ export const createPaypalOrder = async (
 
 export const capturePaypalOrder = async(req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const {orderId} = req.body;
+     const {orderId} = req.body as { orderId: string };
      const userId = req.user?.userId;
      if(!userId) {
       res.status(404).json("Unauthorized access denied1")
@@ -623,8 +623,7 @@ export const updateOrder = async(req: AuthenticatedRequest, res: Response) => {
 }
 
 export const getOrders = async(req: AuthenticatedRequest, res: Response) => {
-    console.log('📦 getOrders called');
-    console.log('User:', req.user);
+    
     
     try {
         const userId = req.user?.userId;

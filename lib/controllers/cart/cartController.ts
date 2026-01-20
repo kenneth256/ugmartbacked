@@ -136,10 +136,7 @@ export const getCart = async(req: AuthenticatedRequest, res: Response) => {
 }
 
 export const removeFromCart = async(req: AuthenticatedRequest, res: Response) => {
-  console.log('=== REMOVE FROM CART DEBUG ===');
-  console.log('User ID:', req.user?.userId);
-  console.log('Cart Item ID:', req.params.id);
-  
+ 
   try {
     const userId = req.user?.userId;
     const { id } = req.params;
@@ -260,7 +257,7 @@ export const removeFromCart = async(req: AuthenticatedRequest, res: Response) =>
 export const clearCart = async(req: AuthenticatedRequest, res: Response) => {
     try {
          const userId = req.user?.userId;
-    const { id, quantity } = req.body;
+    const { id, quantity } = req.body as Record<string, any>;
     
     if (!userId) {
       return res.status(403).json({ success: false, message: "Invalid user!" });
@@ -281,7 +278,7 @@ res.status(200).json({success: true, message: 'Cart Cleared successfully!'})
 export const updateCart = async(req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const { id, quantity } = req.body;
+    const { id, quantity } = req.body as Record<string, any>;
     
     if (!userId) {
       return res.status(403).json({ success: false, message: "Invalid user!" });

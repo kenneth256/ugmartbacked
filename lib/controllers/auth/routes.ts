@@ -34,7 +34,7 @@ const setToken = async (res: Response, accessToken: string, refreshToken: string
 
 export async function register(req: Request, res: Response): Promise<void> {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body as Record<string, any>;
 
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
@@ -64,7 +64,7 @@ export async function register(req: Request, res: Response): Promise<void> {
 
 export async function login(req: Request, res: Response): Promise<void> {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as Record<string, any>;
     const user = await prisma.user.findUnique({
       where: { email }
     });

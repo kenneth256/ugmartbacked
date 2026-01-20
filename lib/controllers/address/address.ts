@@ -8,7 +8,7 @@ import prisma from "../../prisma.js";
 export const createAddress = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const { name, address, district, subcounty, village, phonenumber, isDefault } = req.body;
+    const { name, address, district, subcounty, village, phonenumber, isDefault } = req.body as Record<string, any>;
 
     if (!userId) {
       return res.status(401).json({ success: false, error: "User unauthorized!" });
@@ -49,12 +49,12 @@ export const createAddress = async (req: AuthenticatedRequest, res: Response) =>
 
 
 export const updateAddress = async (req: AuthenticatedRequest, res: Response) => {
-  console.log('UPDATING ADDRESS'); 
+  
   
   try {
     const userId = req.user?.userId; 
     const { id } = req.params;
-    const { name, email, address, district, subcounty, village, phonenumber, isDefault } = req.body;
+    const { name, email, address, district, subcounty, village, phonenumber, isDefault } = req.body as Record<string, any>;
 
     if (!userId) {
       return res.status(401).json({ 

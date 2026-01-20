@@ -10,7 +10,7 @@ import type { Prisma } from "@prisma/client";
 
 export async function createProduct(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
-    const { name, price, category, description, stock, soldCount, sizes, gender, rating, brand, color, isFeatured } = req.body;
+    const { name, price, category, description, stock, soldCount, sizes, gender, rating, brand, color, isFeatured } = req.body as Record<string, any>;
     const userId  = req.user?.userId as any;
     
    console.log(userId)
@@ -228,7 +228,7 @@ export async function updateProduct(
       return
     }
     const {
-      name: productName,  // ✅ Rename to avoid conflict
+      name: productName,
       price,
       category,
       description,
@@ -326,7 +326,7 @@ export async function updateProduct(
 
 export async function createCategory(req: AuthenticatedRequest, res: Response) {
   try {
-    const { name } = req.body;
+   const { name } = req.body as { name: string };
     
     
     if (!name) {
@@ -366,15 +366,16 @@ export const fetchCategories = async (req: AuthenticatedRequest, res: Response):
 
 export const fetchProductsClient = async(req: AuthenticatedRequest, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 20
-    const category = ((req.query.category as string) || '').split(',').filter(Boolean)
-    const brands = ((req.query.brands as string) || '').split(',').filter(Boolean)
-    const sizes = ((req.query.sizes as string) || '').split(',').filter(Boolean)
-    const minPrice = parseFloat(req.query.minPrice as string) || 0
-    const maxPrice = parseFloat(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER
-    const sortBy = (req.query.sortBy as string) || 'createdAt'
-    const sortOrder = ((req.query.sortOrder as string) === 'asc' ? 'asc' : 'desc')
+     const query = req.query as Record<string, string>;
+    const page = parseInt(query.page) || 1
+    const limit = parseInt(query.limit) || 20
+    const category = (query.category || '').split(',').filter(Boolean)
+    const brands = (query.brands || '').split(',').filter(Boolean)
+    const sizes = (query.sizes || '').split(',').filter(Boolean)
+    const minPrice = parseFloat(query.minPrice) || 0
+    const maxPrice = parseFloat(query.maxPrice) || Number.MAX_SAFE_INTEGER
+    const sortBy = query.sortBy || 'createdAt'
+    const sortOrder = (query.sortOrder === 'asc' ? 'asc' : 'desc')
     const skip = (page - 1) * limit
 
     const andConditions: Prisma.ProductWhereInput[] = []

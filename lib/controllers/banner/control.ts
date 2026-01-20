@@ -5,7 +5,7 @@ import prisma from "../../prisma.js";
 import fs from 'fs'
 
 export const createBanner = async(req: AuthenticatedRequest, res: Response): Promise<void> => {
-  console.log('sending banners');
+ 
   try {
     const files = req.files as Express.Multer.File[];
     
@@ -14,7 +14,7 @@ export const createBanner = async(req: AuthenticatedRequest, res: Response): Pro
       return;
     }
     
-    console.log('Files received:', files.length);
+  
     
   
     const uploadPromises = files.map(file => cloudinary.uploader.upload(file.path, {
@@ -52,7 +52,7 @@ export const createBanner = async(req: AuthenticatedRequest, res: Response): Pro
 }
 
 export const fetchBanners = async(req: AuthenticatedRequest, res: Response) => {
-  console.log('fetched banners')
+  
     try {
        const banners = await prisma.featuredBanner.findMany()
         
@@ -78,7 +78,7 @@ export const fetchBanners = async(req: AuthenticatedRequest, res: Response) => {
 }
 
 export const fetchFeatured = async(req: AuthenticatedRequest, res: Response) => {
-  console.log('fetching featured products')
+  
     try {
         const featuredProducts = await prisma.product.findMany({
             where: {isFeatured: true}
@@ -95,7 +95,7 @@ export const updateFeaturedBanner = async(
   res: Response
 ): Promise<void> => {
   try {
-    const { ids } = req.body;
+    const { ids } = req.body as { ids: string[] };
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       res.status(400).json({
         success: false,
