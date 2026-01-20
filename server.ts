@@ -15,7 +15,8 @@ const app: Express = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',   // Local HTTP
-    'https://localhost:3000',  // Local HTTPS (recommended)
+    'https://localhost:3000',
+     'https://ecomerce-2-p66h.vercel.app'  // Local HTTPS (recommended)
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
