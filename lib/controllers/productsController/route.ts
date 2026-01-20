@@ -373,15 +373,15 @@ export const fetchCategories = async (req: AuthenticatedRequest, res: Response):
 
 export const fetchProductsClient = async(req: AuthenticatedRequest, res: Response) => {
   try {
-    const page = parseInt(getStringParam(req.query.page) || '1') // FIX: Line 135
+    const page = parseInt(getStringParam(req.query.page) || '1')
     const limit = parseInt(getStringParam(req.query.limit) || '20')
     const category = ((getStringParam(req.query.category)) || '').split(',').filter(Boolean)
     const brands = ((getStringParam(req.query.brands)) || '').split(',').filter(Boolean)
     const sizes = ((getStringParam(req.query.sizes)) || '').split(',').filter(Boolean)
     const minPrice = parseFloat(getStringParam(req.query.minPrice) || '0')
     const maxPrice = parseFloat(getStringParam(req.query.maxPrice) || String(Number.MAX_SAFE_INTEGER))
-    const sortBy = getStringParam(req.query.sortBy) || 'createdAt'
-    const sortOrder = (getStringParam(req.query.sortOrder) === 'asc' ? 'asc' : 'desc')
+    const sortBy = (getStringParam(req.query.sortBy) || 'createdAt') as string
+    const sortOrder = ((getStringParam(req.query.sortOrder)) === 'asc' ? 'asc' : 'desc') as 'asc' | 'desc'
     const skip = (page - 1) * limit
 
     const andConditions: Prisma.ProductWhereInput[] = []
