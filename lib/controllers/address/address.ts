@@ -62,6 +62,11 @@ export const updateAddress = async (req: AuthenticatedRequest, res: Response) =>
         message: "User unauthorized!" 
       });
     }
+ 
+    if (typeof addressId !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
 
     const id = addressId;
 

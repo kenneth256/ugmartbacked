@@ -147,8 +147,8 @@ export const removeFromCart = async(req: AuthenticatedRequest, res: Response) =>
         message: "Invalid user!" 
       });
     }
-    
-    if (!idd) {
+
+    if (typeof idd !== "string") {
       return res.status(400).json({ 
         success: false, 
         message: "Cart item ID is required" 

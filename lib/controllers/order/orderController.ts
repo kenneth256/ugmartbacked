@@ -708,6 +708,14 @@ export const getOrderById = async(req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const orderId = req.params.id;
+
+     
+    if (typeof orderId !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
+
+
     
     if(!userId || !orderId) {
       res.status(401).json({success: false, error: 'Unauthorized access denied!'});
