@@ -531,13 +531,13 @@ export const createOrder = async(req: AuthenticatedRequest, res: Response) => {
 export const getOrder = async(req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const {orderId} = req.params;
-    
-    
-    if(!userId) {
-      res.status(401).json({success: false, error: 'User not authenticated'});
-      return;
-    }
+    const idParam = req.params.id;
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
+
+const orderId = idParam;
     
     // ✅ Validating orderId
     if(!orderId || typeof orderId !== 'string') {
@@ -597,8 +597,15 @@ export const getOrder = async(req: AuthenticatedRequest, res: Response) => {
 export const updateOrder = async(req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const orderId = req.params.id;
+    const idParam = req.params.id;
     const status = req.body?.status;
+
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid orderId id" });
+  return;
+}
+
+const orderId = idParam;
     
     if(!userId) {
       res.status(401).json({success: false, error: 'Unauthorized access denied!'});
@@ -700,15 +707,15 @@ export const getOrderByUser = async(req: AuthenticatedRequest, res: Response) =>
 export const getOrderById = async(req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const {id} = req.params;
+    const orderId = req.params.id;
     
-    if(!userId || !id) {
+    if(!userId || !orderId) {
       res.status(401).json({success: false, error: 'Unauthorized access denied!'});
       return;
     }
     
     const order = await prisma.order.findFirst({
-  where: {userId: userId, id},
+  where: {userId: userId, id: orderId},
   include: {
     items: true,
     address: true,
