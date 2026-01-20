@@ -139,7 +139,7 @@ export const removeFromCart = async(req: AuthenticatedRequest, res: Response) =>
  
   try {
     const userId = req.user?.userId;
-    const { id } = req.params;
+    const idd= req.params.id;
     
     if (!userId) {
       return res.status(403).json({ 
@@ -148,20 +148,20 @@ export const removeFromCart = async(req: AuthenticatedRequest, res: Response) =>
       });
     }
     
-    if (!id) {
+    if (!idd) {
       return res.status(400).json({ 
         success: false, 
         message: "Cart item ID is required" 
       });
     }
-    
+    const id = idd;
     // First, get the user's cart
     const cart = await prisma.cart.findUnique({
       where: { userId },
       select: { id: true }
     });
     
-    console.log('User Cart:', cart);
+   
     
     if (!cart) {
       return res.status(404).json({ 

@@ -53,7 +53,7 @@ export const updateAddress = async (req: AuthenticatedRequest, res: Response) =>
   
   try {
     const userId = req.user?.userId; 
-    const { id } = req.params;
+    const addressId = req.params.id;
     const { name, email, address, district, subcounty, village, phonenumber, isDefault } = req.body as Record<string, any>;
 
     if (!userId) {
@@ -62,6 +62,8 @@ export const updateAddress = async (req: AuthenticatedRequest, res: Response) =>
         message: "User unauthorized!" 
       });
     }
+
+    const id = addressId;
 
     
     if (!name && !email && !address && !district && !subcounty && !village && !phonenumber && isDefault === undefined) {
@@ -136,15 +138,17 @@ export const updateAddress = async (req: AuthenticatedRequest, res: Response) =>
 export const deleteAddress = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const { id } = req.params;
+    const addressId = req.params.id;
 
     if (!userId) {
       return res.status(401).json({ success: false, error: "User unauthorized!" });
     }
 
-    if (!id) {
+    if (!addressId) {
       return res.status(400).json({ success: false, error: "Address ID is required!" });
     }
+
+    const id = addressId;
 
     const existingAddress = await prisma.address.findFirst({
       where: { id, userId },

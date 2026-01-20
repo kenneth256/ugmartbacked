@@ -39,7 +39,13 @@ export async function createCoupon(req: AuthenticatedRequest, res: Response): Pr
 
 export async function deleteCoupon(req: AuthenticatedRequest, res: Response) {
   try {
-    const { id } = req.params;
+ const idParam = req.params.id;
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid coupon id" });
+  return;
+}
+
+const id = idParam;
 
     if (!id) {
       return res.status(400).json({ success: false, error: "Coupon ID is required" });
