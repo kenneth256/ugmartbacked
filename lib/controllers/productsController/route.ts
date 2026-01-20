@@ -5,8 +5,15 @@ import cloudinary from "../../../config/config.js";
 import fs from "fs";
 import type { Prisma } from "@prisma/client";
 
-
-
+// Helper function to convert query params to string
+const getStringParam = (param: any): string | undefined => {
+  if (!param) return undefined;
+  if (typeof param === 'string') return param;
+  if (Array.isArray(param) && param.length > 0) {
+    return typeof param[0] === 'string' ? param[0] : undefined;
+  }
+  return undefined;
+};
 
 export async function createProduct(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
@@ -159,7 +166,7 @@ export const deleteProduct = async(req: AuthenticatedRequest, res: Response) => 
     // Check if product has any pending/active orders
     const activeOrders = await prisma.orderItem.findFirst({
       where: { 
-        productId: id,
+        productId: getStringParam(req.query.productId), // FIX: Line 162
         order: {
           status: {
             in: ['PENDING', 'PROCESSING', 'SHIPPED'] // Not DELIVERED, CANCELLED, or REFUNDED
@@ -180,16 +187,16 @@ export const deleteProduct = async(req: AuthenticatedRequest, res: Response) => 
 
    
     await prisma.cartItem.deleteMany({
-      where: { productID: id }
+      where: { productID: getStringParam(req.query.productId) } // FIX: Line 183
     });
 
     
     await prisma.wishlistItem.deleteMany({
-      where: { productId: id }
+      where: { productId: getStringParam(req.query.productId) } // FIX: Line 188
     });
 
     const deleteProduct = await prisma.product.delete({
-      where: {id}
+      where: {id: getStringParam(req.query.id)} // FIX: Line 192
     });
 
     res.json({success: true, message: 'Product deleted successfully'});
@@ -244,7 +251,7 @@ export async function updateProduct(
     } = req.body;
 
     const existingProduct = await prisma.product.findUnique({
-      where: { id }
+      where: { id: getStringParam(req.query.id) } // FIX: Line 247
     });
 
     if (!existingProduct) {
@@ -275,7 +282,7 @@ export async function updateProduct(
 
     // Update product
     const updatedProduct = await prisma.product.update({
-      where: { id },
+      where: { id: getStringParam(req.query.id) }, // FIX: Line 278
       data: {
         ...(productName && { name: productName }),  // ✅ Use renamed variable
         ...(price && { price: parseFloat(price) }),
@@ -366,15 +373,15 @@ export const fetchCategories = async (req: AuthenticatedRequest, res: Response):
 
 export const fetchProductsClient = async(req: AuthenticatedRequest, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 20
-    const category = ((req.query.category as string) || '').split(',').filter(Boolean)
-    const brands = ((req.query.brands as string) || '').split(',').filter(Boolean)
-    const sizes = ((req.query.sizes as string) || '').split(',').filter(Boolean)
-    const minPrice = parseFloat(req.query.minPrice as string) || 0
-    const maxPrice = parseFloat(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER
-    const sortBy = (req.query.sortBy as string) || 'createdAt'
-    const sortOrder = ((req.query.sortOrder as string) === 'asc' ? 'asc' : 'desc')
+    const page = parseInt(getStringParam(req.query.page) || '1') // FIX: Line 135
+    const limit = parseInt(getStringParam(req.query.limit) || '20')
+    const category = ((getStringParam(req.query.category)) || '').split(',').filter(Boolean)
+    const brands = ((getStringParam(req.query.brands)) || '').split(',').filter(Boolean)
+    const sizes = ((getStringParam(req.query.sizes)) || '').split(',').filter(Boolean)
+    const minPrice = parseFloat(getStringParam(req.query.minPrice) || '0')
+    const maxPrice = parseFloat(getStringParam(req.query.maxPrice) || String(Number.MAX_SAFE_INTEGER))
+    const sortBy = getStringParam(req.query.sortBy) || 'createdAt'
+    const sortOrder = (getStringParam(req.query.sortOrder) === 'asc' ? 'asc' : 'desc')
     const skip = (page - 1) * limit
 
     const andConditions: Prisma.ProductWhereInput[] = []
