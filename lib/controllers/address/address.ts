@@ -149,11 +149,11 @@ export const deleteAddress = async (req: AuthenticatedRequest, res: Response) =>
       return res.status(401).json({ success: false, error: "User unauthorized!" });
     }
 
-    if (!addressId) {
+    if (typeof addressId !== "string") {
       return res.status(400).json({ success: false, error: "Address ID is required!" });
     }
 
-    const id = addressId;
+    const id : string = addressId;
 
     const existingAddress = await prisma.address.findFirst({
       where: { id, userId },
