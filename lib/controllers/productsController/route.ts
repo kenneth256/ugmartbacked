@@ -223,10 +223,13 @@ export async function updateProduct(
   res: Response
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    if(!id) {
-      return
-    }
+   const idParam = req.params.id;
+    if (typeof idParam !== "string") {
+  res.status(400).json({ success: false, error: "Invalid product id" });
+  return;
+}
+
+const id = idParam;
     const {
       name: productName,
       price,
